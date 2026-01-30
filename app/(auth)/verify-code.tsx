@@ -188,9 +188,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardsWrapper: {
-        paddingTop: 120, // Space for header
+        paddingTop: 100,
         alignItems: 'center',
-        paddingBottom: 20,
+        paddingBottom: 0,
     },
     // Rectangle 4
     topCard: {
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: 0,
+        opacity: 1,
         zIndex: 10,
         // Card Shadow
         shadowColor: '#000',
@@ -218,12 +219,13 @@ const styles = StyleSheet.create({
         width: 388,
         height: 319,
         backgroundColor: '#EDEDED',
-        borderBottomRightRadius: 61,
-        borderBottomLeftRadius: 59,
-        marginTop: -32,
+        borderBottomRightRadius: 0,
+        borderBottomLeftRadius: 0,
+        marginTop: 0,
+        opacity: 1,
         zIndex: 20,
         justifyContent: 'center',
-        paddingTop: 32,
+        paddingTop: 24, // Reduced from 32
         alignItems: 'center',
         // Card Shadow
         shadowColor: '#000',
@@ -273,10 +275,11 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     continueButton: {
-        backgroundColor: '#004080',
+        backgroundColor: '#054B8D',
         borderRadius: 25,
         width: 230,
         height: 50,
+        opacity: 1,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: '#000',

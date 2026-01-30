@@ -131,7 +131,7 @@ export default function VehicleSetupScreen() {
                             {/* Continue Button */}
                             <HapticButton
                                 style={styles.primaryButton}
-                                onPress={() => router.push('/(tabs)')}
+                                onPress={() => router.replace('/(tabs)')}
                             >
                                 <Text style={styles.primaryButtonText}>Continue</Text>
                             </HapticButton>

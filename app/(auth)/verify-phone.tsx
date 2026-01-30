@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 31,
         borderBottomLeftRadius: 31,
         overflow: 'hidden',
+        opacity: 1,
         // Card Shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#666',
         textAlign: 'center',
-        marginBottom: 32, // More gap before input
+        marginBottom: 20, // More gap before input
         lineHeight: 18,
         paddingHorizontal: 20,
     },

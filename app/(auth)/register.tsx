@@ -304,6 +304,9 @@ const styles = StyleSheet.create({
     formContainer: {
         backgroundColor: '#D9D9D9',
         flex: 1,
+        borderWidth: 1,
+        borderColor: '#000000',
+        opacity: 1,
         // Card Shadow
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },

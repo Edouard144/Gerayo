@@ -13,7 +13,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          tabBarStyle: { display: 'none' }
         }}
       />
       <Tabs.Screen
@@ -21,6 +22,14 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />
+        }}
+      />
+      <Tabs.Screen
+        name="your-cars"
+        options={{
+          title: 'Your Cars',
+          tabBarIcon: ({ color, size }) => <Ionicons name="car" size={size} color={color} />,
+          tabBarStyle: { display: 'none' }
         }}
       />
       <Tabs.Screen

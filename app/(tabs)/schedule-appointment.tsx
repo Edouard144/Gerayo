@@ -40,7 +40,8 @@ interface UpcomingAppointment {
 
 const APPOINTMENT_TYPES = [
     { id: 'inspection', label: 'Car inspection' },
-    { id: 'fine', label: 'Fine related meeting' },
+    { id: 'service', label: 'Service Appointment' },
+    { id: 'registration', label: 'Registration' },
     { id: 'other', label: 'Other appointment' },
 ];
 
@@ -95,6 +96,7 @@ export default function ScheduleAppointmentScreen() {
     const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState('');
     const [notes, setNotes] = useState('');
+    const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
 
     // Validation errors
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -128,7 +130,7 @@ export default function ScheduleAppointmentScreen() {
         if (validateForm()) {
             const newAppointment: UpcomingAppointment = {
                 id: Math.random().toString(36).substr(2, 9),
-                type: 'Car inspection', // Default for now
+                type: APPOINTMENT_TYPES.find(t => t.id === appointmentType)?.label || 'Car inspection',
                 date: selectedDate,
                 time: '10:00 AM', // Default for now
                 location: selectedLocation || 'RNP Station',
@@ -245,22 +247,24 @@ export default function ScheduleAppointmentScreen() {
                             {upcomingAppointments.map((appointment) => (
                                 <View key={appointment.id} style={styles.appointmentCard}>
                                     <View style={styles.appointmentCardContent}>
-                                        <View style={styles.appointmentHeaderRow}>
-                                            <Text style={styles.appointmentMainLabel}>{appointment.type}</Text>
-                                            <View style={styles.statusBadge}>
-                                                <Ionicons name="time-outline" size={14} color="#3B6CF2" />
-                                                <Text style={styles.statusText}>Scheduled</Text>
+                                        <View>
+                                            <View style={styles.appointmentHeaderRow}>
+                                                <Text style={styles.appointmentMainLabel}>{appointment.type}</Text>
+                                                <View style={styles.statusBadge}>
+                                                    <Ionicons name="time-outline" size={14} color="#3B6CF2" />
+                                                    <Text style={styles.statusText}>Scheduled</Text>
+                                                </View>
+                                            </View>
+                                            <Text style={styles.appointmentPlate}>{cars.find(c => c.id === selectedCarId)?.plateNumber}</Text>
+
+                                            <View style={[styles.appointmentDetailRow, { marginTop: 4 }]}>
+                                                <Ionicons name="calendar-outline" size={15} color="#A1B1C8" />
+                                                <Text style={styles.appointmentDetailText}>{appointment.date} • {appointment.time}</Text>
                                             </View>
                                         </View>
-                                        <Text style={styles.appointmentPlate}>{cars.find(c => c.id === selectedCarId)?.plateNumber}</Text>
 
                                         <View style={styles.appointmentDetailRow}>
-                                            <Ionicons name="calendar-outline" size={16} color="#A1B1C8" />
-                                            <Text style={styles.appointmentDetailText}>{appointment.date} • {appointment.time}</Text>
-                                        </View>
-
-                                        <View style={styles.appointmentDetailRow}>
-                                            <Ionicons name="location-outline" size={16} color="#A1B1C8" />
+                                            <Ionicons name="location-outline" size={15} color="#A1B1C8" />
                                             <Text style={styles.appointmentDetailText}>{appointment.location}</Text>
                                         </View>
                                     </View>
@@ -296,12 +300,46 @@ export default function ScheduleAppointmentScreen() {
 
                         <ScrollView showsVerticalScrollIndicator={false}>
                             <View style={styles.modalForm}>
-                                <View style={styles.formItem}>
+                                <View style={[styles.formItem, { zIndex: 100 }]}>
                                     <Text style={styles.modalLabel}>Appointment Type</Text>
-                                    <TouchableOpacity style={styles.dropdownInput}>
-                                        <Text style={styles.dropdownText}>Car inspection</Text>
-                                        <Ionicons name="chevron-down" size={20} color="#A1B1C8" />
+                                    <TouchableOpacity
+                                        style={[styles.dropdownHeader, isTypeDropdownOpen && styles.dropdownHeaderActive]}
+                                        onPress={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                                    >
+                                        <Text style={styles.dropdownText}>
+                                            {APPOINTMENT_TYPES.find(t => t.id === appointmentType)?.label}
+                                        </Text>
+                                        <Ionicons
+                                            name={isTypeDropdownOpen ? "chevron-up" : "chevron-down"}
+                                            size={20}
+                                            color="#A1B1C8"
+                                        />
                                     </TouchableOpacity>
+
+                                    {isTypeDropdownOpen && (
+                                        <View style={styles.dropdownList}>
+                                            {APPOINTMENT_TYPES.map((type) => (
+                                                <TouchableOpacity
+                                                    key={type.id}
+                                                    style={styles.dropdownOption}
+                                                    onPress={() => {
+                                                        setAppointmentType(type.id);
+                                                        setIsTypeDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <Text style={[
+                                                        styles.dropdownOptionText,
+                                                        appointmentType === type.id && styles.dropdownOptionTextSelected
+                                                    ]}>
+                                                        {type.label}
+                                                    </Text>
+                                                    {appointmentType === type.id && (
+                                                        <Ionicons name="checkmark" size={18} color="#3B6CF2" />
+                                                    )}
+                                                </TouchableOpacity>
+                                            ))}
+                                        </View>
+                                    )}
                                 </View>
 
                                 <View style={styles.formItem}>
@@ -383,33 +421,37 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     backButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'transparent',
+        width: 45,
+        height: 45,
+        borderRadius: 22.5,
+        backgroundColor: '#131722',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
+        marginRight: 12,
         borderWidth: 1,
         borderColor: '#262B3B',
     },
     titleWrapper: {
         flex: 1,
+        justifyContent: 'space-between',
+        height: 45,
+        paddingVertical: 1,
     },
     appointmentsTitle: {
         fontFamily: 'CairoBold',
-        fontSize: 28,
+        fontSize: 24,
         color: '#FFF',
+        lineHeight: 24,
     },
     appointmentsSubtitle: {
         fontFamily: 'Cairo',
-        fontSize: 14,
+        fontSize: 16,
         color: '#A1B1C8',
-        marginTop: -4,
+        lineHeight: 16,
     },
     addButtonAlt: {
-        width: 44,
-        height: 44,
+        width: 45,
+        height: 45,
         borderRadius: 12,
         justifyContent: 'center',
         alignItems: 'center',
@@ -419,55 +461,59 @@ const styles = StyleSheet.create({
     },
     appointmentCard: {
         width: '100%',
-        backgroundColor: 'transparent',
+        height: 112,
+        backgroundColor: '#131722',
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#979797',
-        padding: 16,
+        borderColor: '#262B3B',
+        paddingHorizontal: 16,
+        paddingTop: 10,
+        paddingBottom: 8,
+        justifyContent: 'center',
     },
     appointmentCardContent: {
         flex: 1,
+        justifyContent: 'space-between',
+        paddingVertical: 2,
     },
     appointmentHeaderRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: 2,
+        alignItems: 'center',
     },
     appointmentMainLabel: {
         fontFamily: 'CairoBold',
-        fontSize: 18,
+        fontSize: 16,
         color: '#FFF',
     },
     statusBadge: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'rgba(59, 108, 242, 0.1)',
-        paddingHorizontal: 10,
-        paddingVertical: 4,
+        paddingHorizontal: 6,
+        paddingVertical: 1,
         borderRadius: 12,
-        gap: 4,
+        gap: 3,
     },
     statusText: {
         fontFamily: 'Cairo',
-        fontSize: 12,
+        fontSize: 10,
         color: '#3B6CF2',
     },
     appointmentPlate: {
         fontFamily: 'Cairo',
-        fontSize: 14,
+        fontSize: 11.5,
         color: '#A1B1C8',
-        marginBottom: 12,
+        marginTop: -2,
     },
     appointmentDetailRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
-        marginBottom: 6,
+        gap: 5,
     },
     appointmentDetailText: {
         fontFamily: 'Cairo',
-        fontSize: 13,
+        fontSize: 12,
         color: '#A1B1C8',
     },
     sectionInstruction: {
@@ -482,11 +528,11 @@ const styles = StyleSheet.create({
     },
     carCard: {
         width: '100%',
-        height: 113,
+        height: 125,
         flexDirection: 'row',
         backgroundColor: '#131722',
         borderRadius: 10,
-        padding: 14,
+        padding: 16,
         borderWidth: 1,
         borderColor: '#262B3B',
         marginBottom: 12,
@@ -521,24 +567,24 @@ const styles = StyleSheet.create({
     },
     plateNumber: {
         fontFamily: 'CairoBold',
-        fontSize: 18,
+        fontSize: 20,
         color: '#FFF',
-        lineHeight: 22,
+        lineHeight: 24,
         marginBottom: -1,
     },
     carInfo: {
         fontFamily: 'Cairo',
-        fontSize: 12,
+        fontSize: 14,
         color: 'rgba(255, 255, 255, 0.4)',
-        lineHeight: 16,
+        lineHeight: 18,
         marginTop: 0,
         marginBottom: -1,
     },
     carColor: {
         fontFamily: 'Cairo',
-        fontSize: 11,
+        fontSize: 12.5,
         color: 'rgba(255, 255, 255, 0.4)',
-        lineHeight: 14,
+        lineHeight: 16,
         marginBottom: 9,
     },
     chevron: {
@@ -631,17 +677,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#FFF',
     },
-    dropdownInput: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(255, 255, 255, 0.1)',
-    },
     dropdownText: {
         fontFamily: 'Cairo',
         fontSize: 16,
@@ -679,5 +714,50 @@ const styles = StyleSheet.create({
         fontFamily: 'CairoBold',
         fontSize: 18,
         color: '#FFF',
+    },
+    dropdownHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+    },
+    dropdownHeaderActive: {
+        borderColor: '#3B6CF2',
+    },
+    dropdownList: {
+        position: 'absolute',
+        top: 68, // (label height + gap + header height)
+        left: 0,
+        right: 0,
+        backgroundColor: '#1A1E2E',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        overflow: 'hidden',
+        zIndex: 1000,
+        elevation: 5,
+    },
+    dropdownOption: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        borderBottomWidth: 1,
+        borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    },
+    dropdownOptionText: {
+        fontFamily: 'Cairo',
+        fontSize: 15,
+        color: 'rgba(255, 255, 255, 0.7)',
+    },
+    dropdownOptionTextSelected: {
+        color: '#FFF',
+        fontFamily: 'CairoBold',
     },
 });

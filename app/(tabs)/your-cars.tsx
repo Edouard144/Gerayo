@@ -263,15 +263,15 @@ const styles = StyleSheet.create({
     },
     pageTitle: {
         fontFamily: 'CairoBold',
-        fontSize: 32,
+        fontSize: 24,
         color: '#FFF',
         marginBottom: 4,
     },
     vehicleCount: {
         fontFamily: 'Cairo',
-        fontSize: 14, // Reduced slightly from 15
+        fontSize: 16,
         color: '#999',
-        marginTop: -10, // Moved even closer to title
+        marginTop: -10,
     },
     addButton: {
         flexDirection: 'row',
@@ -292,11 +292,11 @@ const styles = StyleSheet.create({
     },
     carCard: {
         width: '100%', // Responsive width
-        height: 113,
+        height: 125,
         flexDirection: 'row',
         backgroundColor: '#131722',
         borderRadius: 10,
-        padding: 14,
+        padding: 16,
         borderWidth: 1,
         borderColor: '#262B3B',
         marginBottom: 12,
@@ -326,24 +326,24 @@ const styles = StyleSheet.create({
     },
     plateNumber: {
         fontFamily: 'CairoBold',
-        fontSize: 18,
+        fontSize: 20,
         color: '#FFF',
-        lineHeight: 22, // Controlled height
+        lineHeight: 24, // Controlled height
         marginBottom: -1,
     },
     carInfo: {
         fontFamily: 'Cairo',
-        fontSize: 12,
+        fontSize: 14,
         color: 'rgba(255, 255, 255, 0.4)',
-        lineHeight: 16, // Controlled height
+        lineHeight: 18, // Controlled height
         marginTop: 0,
         marginBottom: -1,
     },
     carColor: {
         fontFamily: 'Cairo',
-        fontSize: 11,
+        fontSize: 12.5,
         color: 'rgba(255, 255, 255, 0.4)',
-        lineHeight: 14,
+        lineHeight: 16,
         marginBottom: 9, // Increased from 6
     },
     dividerContainer: {
@@ -364,12 +364,12 @@ const styles = StyleSheet.create({
     },
     inspectionLabel: {
         fontFamily: 'Cairo',
-        fontSize: 11, // Reduced from 12
+        fontSize: 12,
         color: '#999',
     },
     inspectionDate: {
         fontFamily: 'Cairo',
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: '600',
         color: '#3B6CF2',
     },

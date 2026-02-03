@@ -23,7 +23,8 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/car_icon.png"
+      "favicon": "./assets/images/car_icon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",

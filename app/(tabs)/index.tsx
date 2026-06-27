@@ -1,4 +1,5 @@
 import { FloatingFooter } from '@/components/FloatingFooter';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -14,264 +15,257 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Main Content */}
       <ScrollView
-        contentContainerStyle={[styles.contentContainer, { paddingBottom: 120 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingTop: insets.top + 12, paddingBottom: 120 }]}
         showsVerticalScrollIndicator={false}
       >
-
-        {/* Header Icons Container - 30px from top */}
-        <View style={[styles.headerIconsContainer, { top: 30 }]}>
-          <View style={styles.headerIcons}>
-            <View style={styles.notificationBadge}>
-              <Image source={require('../../assets/images/notification_icon.png')} style={{ width: 30, height: 30 }} resizeMode="contain" />
-              <View style={styles.badge}><Text style={styles.badgeText}>3</Text></View>
-            </View>
-            <Image
-              source={require('../../assets/images/user_icon.png')}
-              style={styles.profileImage}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-
-        {/* Header Section - Title at 35px from top */}
-        <View style={[styles.headerContainer, { marginTop: 35 }]}>
+        {/* Header Row */}
+        <View style={styles.headerRow}>
           <View style={styles.headerTexts}>
             <Text style={styles.welcomeText}>Welcome back</Text>
             <Text style={styles.appTitle}>Car Portal</Text>
           </View>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity style={styles.notifButton}>
+              <Ionicons name="notifications-outline" size={22} color="#FFF" />
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>3</Text>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.avatarCircle}>
+              <Ionicons name="person" size={20} color="#FFF" />
+            </View>
+          </View>
         </View>
 
-        {/* Hero Section */}
+        {/* Hero Banner */}
         <View style={styles.heroSection}>
           <Image
             source={require('../../assets/images/hero-car 1.png')}
             style={styles.heroImage}
             resizeMode="cover"
           />
-          <View style={styles.heroOverlay}>
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.7)']}
+            style={styles.heroOverlay}
+          >
             <Text style={styles.gerayoText}>Gerayo</Text>
             <Text style={styles.heroSubtitle}>Your Car Management System</Text>
-          </View>
+          </LinearGradient>
         </View>
 
         {/* Upcoming Inspections */}
-        <View style={styles.sectionContainer}>
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Upcoming Inspections</Text>
 
-          {/* Inspection Card 1 */}
-          <View style={[styles.card, styles.cardBlueBorder]}>
-            <View style={styles.cardMainRow}>
+          <View style={[styles.card, { borderColor: '#2D5EFF' }]}>
+            <View style={styles.cardRow}>
               <LinearGradient
                 colors={['#3B6CF2', '#5D5FEF', '#7B4DFF']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={styles.cardIconContainerBlue}
+                style={styles.cardIcon}
               >
-                <Image
-                  source={require('../../assets/images/upcomming_inspection_longtimeremaining.png')}
-                  style={{ width: 20, height: 20, tintColor: '#FFF' }}
-                  resizeMode="contain"
-                />
+                <Ionicons name="document-text" size={18} color="#FFF" />
               </LinearGradient>
-              <View style={styles.cardContent}>
+              <View style={styles.cardInfo}>
                 <Text style={styles.plateNumber}>RAB 123A</Text>
                 <Text style={styles.carModel}>Toyota Corolla</Text>
               </View>
-              <View style={styles.daysLeftContainer}>
-                <Text style={styles.daysLeftBlue}>25</Text>
-                <Text style={styles.daysLeftLabel}>days left</Text>
+              <View style={styles.daysContainer}>
+                <Text style={[styles.daysNumber, { color: '#2D5EFF' }]}>25</Text>
+                <Text style={styles.daysLabel}>days left</Text>
               </View>
             </View>
             <View style={styles.cardDivider} />
-            <Text style={styles.nextInspection}>Next inspection : January 2026</Text>
+            <Text style={styles.cardFooter}>Next inspection : January 2026</Text>
           </View>
 
-          {/* Inspection Card 2 */}
-          <View style={[styles.card, styles.cardRedBorder]}>
-            <View style={styles.cardMainRow}>
+          <View style={[styles.card, { borderColor: '#D32F2F' }]}>
+            <View style={styles.cardRow}>
               <LinearGradient
                 colors={['#3B6CF2', '#5D5FEF', '#7B4DFF']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={styles.cardIconContainerRed}
+                style={styles.cardIcon}
               >
-                <Image
-                  source={require('../../assets/images/upcomming_inspection_shortime_remaining.png')}
-                  style={{ width: 23.91, height: 23.91, tintColor: '#FFF' }}
-                  resizeMode="contain"
-                />
+                <Ionicons name="warning" size={18} color="#FFF" />
               </LinearGradient>
-              <View style={styles.cardContent}>
+              <View style={styles.cardInfo}>
                 <Text style={styles.plateNumber}>RAE 789C</Text>
                 <Text style={styles.carModel}>Volkswagen Golf</Text>
               </View>
-              <View style={styles.daysLeftContainer}>
-                <Text style={styles.daysLeftRed}>02</Text>
-                <Text style={styles.daysLeftLabel}>days left</Text>
+              <View style={styles.daysContainer}>
+                <Text style={[styles.daysNumber, { color: '#D32F2F' }]}>02</Text>
+                <Text style={styles.daysLabel}>days left</Text>
               </View>
             </View>
             <View style={styles.cardDivider} />
-            <Text style={styles.nextInspection}>Next inspection : Feb 2026</Text>
+            <Text style={styles.cardFooter}>Next inspection : Feb 2026</Text>
           </View>
         </View>
 
         {/* Police Announcements */}
-        <View style={styles.sectionContainer}>
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Police Announcements</Text>
 
-          {/* Announcement 1 */}
-          <TouchableOpacity style={styles.announcementCard}>
-            <View style={[styles.sidebar, { backgroundColor: '#2D5EFF' }]} />
-            <View style={styles.announcementMain}>
-              <View style={styles.announcementHeader}>
-                <View style={styles.announcementIconCircle}>
-                  <Image source={require('../../assets/images/newtrafficsuggestion.png')} style={{ width: 30, height: 30 }} resizeMode="contain" />
-                </View>
-                <View style={styles.announcementTextContainer}>
+          <TouchableOpacity style={styles.announcementCard} activeOpacity={0.7}>
+            <View style={[styles.announcementSidebar, { backgroundColor: '#2D5EFF' }]} />
+            <View style={styles.announcementBody}>
+              <View style={[styles.announcementIcon, { backgroundColor: 'rgba(45, 94, 255, 0.12)' }]}>
+                <Ionicons name="megaphone" size={20} color="#2D5EFF" />
+              </View>
+              <View style={styles.announcementContent}>
+                <View style={styles.announcementTop}>
                   <Text style={styles.announcementTitle}>New Traffic Suggestion</Text>
-                  <Text style={styles.announcementText}>All vehicles must complete their annual inspection by the end of the month. Book your appointment now.</Text>
+                  <Text style={styles.announcementDate}>2h ago</Text>
                 </View>
-                <Text style={styles.announcementDate}>2h ago</Text>
+                <Text style={styles.announcementText} numberOfLines={2}>
+                  All vehicles must complete their annual inspection by the end of the month. Book your appointment now.
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
 
-          {/* Announcement 2 */}
-          <TouchableOpacity style={styles.announcementCard}>
-            <View style={[styles.sidebar, { backgroundColor: '#FFB800' }]} />
-            <View style={styles.announcementMain}>
-              <View style={styles.announcementHeader}>
-                <View style={[styles.announcementIconCircle, { backgroundColor: 'rgba(255, 184, 0, 0.1)' }]}>
-                  <Image source={require('../../assets/images/vehicle_inspection_reminder.png')} style={{ width: 30, height: 30 }} resizeMode="contain" />
-                </View>
-                <View style={styles.announcementTextContainer}>
+          <TouchableOpacity style={styles.announcementCard} activeOpacity={0.7}>
+            <View style={[styles.announcementSidebar, { backgroundColor: '#FFB800' }]} />
+            <View style={styles.announcementBody}>
+              <View style={[styles.announcementIcon, { backgroundColor: 'rgba(255, 184, 0, 0.12)' }]}>
+                <Ionicons name="time" size={20} color="#FFB800" />
+              </View>
+              <View style={styles.announcementContent}>
+                <View style={styles.announcementTop}>
                   <Text style={styles.announcementTitle}>Vehicle Inspection Reminder</Text>
-                  <Text style={styles.announcementText}>Your vehicle RAB 123A is due for inspection in 25 days. Please schedule an appointment.</Text>
+                  <Text style={styles.announcementDate}>1d ago</Text>
                 </View>
-                <Text style={styles.announcementDate}>1d ago</Text>
+                <Text style={styles.announcementText} numberOfLines={2}>
+                  Your vehicle RAB 123A is due for inspection in 25 days. Please schedule an appointment.
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
 
-          {/* Announcement 3 */}
-          <TouchableOpacity style={styles.announcementCard}>
-            <View style={[styles.sidebar, { backgroundColor: '#D32F2F' }]} />
-            <View style={styles.announcementMain}>
-              <View style={styles.announcementHeader}>
-                <View style={[styles.announcementIconCircle, { backgroundColor: 'rgba(211, 47, 47, 0.1)' }]}>
-                  <Image source={require('../../assets/images/accident_detected.png')} style={{ width: 30, height: 30 }} resizeMode="contain" />
-                </View>
-                <View style={styles.announcementTextContainer}>
+          <TouchableOpacity style={styles.announcementCard} activeOpacity={0.7}>
+            <View style={[styles.announcementSidebar, { backgroundColor: '#D32F2F' }]} />
+            <View style={styles.announcementBody}>
+              <View style={[styles.announcementIcon, { backgroundColor: 'rgba(211, 47, 47, 0.12)' }]}>
+                <Ionicons name="alert-circle" size={20} color="#D32F2F" />
+              </View>
+              <View style={styles.announcementContent}>
+                <View style={styles.announcementTop}>
                   <Text style={styles.announcementTitle}>Accident Detected</Text>
-                  <Text style={styles.announcementText}>An accident has been reported on your usual route. Expect delays of up to 20 minutes.</Text>
+                  <Text style={styles.announcementDate}>2d ago</Text>
                 </View>
-                <Text style={styles.announcementDate}>2d ago</Text>
+                <Text style={styles.announcementText} numberOfLines={2}>
+                  An accident has been reported on your usual route. Expect delays of up to 20 minutes.
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
 
-          {/* Announcement 4 */}
-          <TouchableOpacity style={styles.announcementCard}>
-            <View style={[styles.sidebar, { backgroundColor: '#666' }]} />
-            <View style={styles.announcementMain}>
-              <View style={styles.announcementHeader}>
-                <View style={[styles.announcementIconCircle, { backgroundColor: 'rgba(102, 102, 102, 0.1)' }]}>
-                  <Image source={require('../../assets/images/road_safety_week.png')} style={{ width: 30, height: 30 }} resizeMode="contain" />
-                </View>
-                <View style={styles.announcementTextContainer}>
+          <TouchableOpacity style={styles.announcementCard} activeOpacity={0.7}>
+            <View style={[styles.announcementSidebar, { backgroundColor: '#666' }]} />
+            <View style={styles.announcementBody}>
+              <View style={[styles.announcementIcon, { backgroundColor: 'rgba(102, 102, 102, 0.12)' }]}>
+                <Ionicons name="shield-checkmark" size={20} color="#999" />
+              </View>
+              <View style={styles.announcementContent}>
+                <View style={styles.announcementTop}>
                   <Text style={styles.announcementTitle}>Road Safety Week</Text>
-                  <Text style={styles.announcementText}>Join us in promoting road safety. Check your vehicle lights, brakes, and tires regularly.</Text>
+                  <Text style={styles.announcementDate}>Jan 14</Text>
                 </View>
-                <Text style={styles.announcementDate}>Jan 14</Text>
+                <Text style={styles.announcementText} numberOfLines={2}>
+                  Join us in promoting road safety. Check your vehicle lights, brakes, and tires regularly.
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
 
       <FloatingFooter activeTab="home" />
-    </View >
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#050511', // Very dark background
+    backgroundColor: '#050511',
   },
   contentContainer: {
     paddingHorizontal: 20,
-    justifyContent: 'flex-start',
   },
-  headerIconsContainer: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 10,
-  },
-  headerContainer: {
+
+  // Header
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: 20,
-    paddingHorizontal: 20,
   },
   headerTexts: {
-    alignItems: 'flex-start',
+    flex: 1,
   },
   welcomeText: {
     fontFamily: 'CairoMedium',
-    fontSize: 24,
-    color: '#FFF',
-    lineHeight: 22,
-    marginBottom: 15,
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.55)',
+    marginBottom: 2,
   },
   appTitle: {
     fontFamily: 'CairoBold',
-    fontSize: 36,
+    fontSize: 28,
     color: '#FFF',
-    lineHeight: 22,
   },
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 15,
+    gap: 12,
   },
-  notificationBadge: {
+  notifButton: {
     position: 'relative',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badge: {
     position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: 'red',
-    borderRadius: 8,
-    width: 14,
+    top: 4,
+    right: 4,
+    backgroundColor: '#EF4444',
+    borderRadius: 7,
+    minWidth: 14,
     height: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1
+    paddingHorizontal: 3,
   },
   badgeText: {
     fontFamily: 'CairoBold',
     color: '#FFF',
     fontSize: 9,
+    lineHeight: 14,
   },
-  profileImage: {
-    width: 32,
-    height: 32,
-  },
-  heroSection: {
-    alignItems: 'center',
-    marginBottom: 25,
-    position: 'relative',
-    height: 200,
-    width: '100%',
+  avatarCircle: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
+    backgroundColor: 'rgba(99, 102, 241, 0.25)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Hero
+  heroSection: {
+    height: 180,
+    borderRadius: 18,
     overflow: 'hidden',
-    backgroundColor: '#000',
+    marginBottom: 24,
+    backgroundColor: '#131722',
   },
   heroImage: {
     width: '100%',
@@ -282,179 +276,143 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingBottom: 15,
-    alignItems: 'flex-start',
-    paddingLeft: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    height: '60%',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 18,
+    paddingBottom: 16,
   },
   gerayoText: {
-    fontFamily: 'CairoMedium',
-    fontSize: 24,
+    fontFamily: 'CairoBold',
+    fontSize: 22,
     color: '#FFF',
     marginBottom: 2,
-    marginTop: 10,
   },
   heroSubtitle: {
-    fontFamily: 'Cairo',
-    fontSize: 16,
-    color: '#FFF',
-    lineHeight: 22,
+    fontFamily: 'CairoMedium',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
   },
-  sectionContainer: {
-    marginBottom: 20,
-    width: '100%',
+
+  // Sections
+  section: {
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontFamily: 'Cairo',
-    fontSize: 20,
+    fontFamily: 'CairoBold',
+    fontSize: 17,
     color: '#FFF',
-    lineHeight: 22,
-    marginBottom: 15,
-    textAlign: 'left',
-    paddingLeft: 20,
+    marginBottom: 14,
   },
+
+  // Inspection Cards
   card: {
     backgroundColor: '#131722',
-    borderRadius: 24,
-    padding: 18,
-    marginBottom: 16,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
   },
-  cardMainRow: {
+  cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  cardBlueBorder: {
-    borderColor: '#2D5EFF',
-  },
-  cardRedBorder: {
-    borderColor: '#4E2328',
-  },
-  cardIconContainerBlue: {
-    width: 49,
+  cardIcon: {
+    width: 44,
     height: 44,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 14,
   },
-  cardIconContainerRed: {
-    width: 49,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  cardContent: {
+  cardInfo: {
     flex: 1,
-    alignItems: 'flex-start',
-    paddingTop: 2, // Slight offset to ensure top is lower than icon top
   },
   plateNumber: {
-    fontFamily: 'CairoMedium',
+    fontFamily: 'CairoBold',
     color: '#FFF',
     fontSize: 15,
-    lineHeight: 22,
-    marginBottom: -3,
-    paddingLeft: 4,
+    marginBottom: 2,
   },
   carModel: {
-    fontFamily: 'Cairo',
-    color: '#FFF',
-    fontSize: 16, // Matching subtitle style size
+    fontFamily: 'CairoMedium',
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 13,
   },
-  daysLeftContainer: {
+  daysContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-    width: 45,
+    width: 50,
   },
-  daysLeftBlue: {
-    fontFamily: 'Cairo',
-    color: '#2D5EFF',
-    fontSize: 20,
-    lineHeight: 22,
-    textAlign: 'center',
+  daysNumber: {
+    fontFamily: 'CairoBold',
+    fontSize: 22,
+    lineHeight: 26,
   },
-  daysLeftRed: {
-    fontFamily: 'Cairo',
-    color: '#D32F2F',
-    fontSize: 20,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
-  daysLeftLabel: {
-    fontFamily: 'Cairo',
-    color: '#FFF',
-    fontSize: 11,
-    lineHeight: 22,
-    marginTop: -2,
-    textAlign: 'center',
+  daysLabel: {
+    fontFamily: 'CairoMedium',
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 10,
   },
   cardDivider: {
     height: 1,
-    backgroundColor: 'rgba(151, 151, 151, 0.15)',
-    marginTop: 18,
-    marginBottom: 12,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    marginVertical: 12,
   },
-  nextInspection: {
-    fontFamily: 'Cairo',
-    color: '#FFF',
-    fontSize: 14, // Cairo Regular around 13-15
-    lineHeight: 22,
-    textAlign: 'left',
+  cardFooter: {
+    fontFamily: 'CairoMedium',
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 13,
   },
+
+  // Announcements
   announcementCard: {
     backgroundColor: '#131722',
-    borderRadius: 16,
+    borderRadius: 14,
     flexDirection: 'row',
     overflow: 'hidden',
-    marginBottom: 12,
-    minHeight: 100,
+    marginBottom: 10,
   },
-  sidebar: {
-    width: 6,
-    height: '100%',
+  announcementSidebar: {
+    width: 4,
   },
-  announcementMain: {
+  announcementBody: {
     flex: 1,
-    padding: 15,
-  },
-  announcementHeader: {
     flexDirection: 'row',
+    padding: 14,
     alignItems: 'flex-start',
   },
-  announcementIconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(45, 94, 255, 0.1)',
+  announcementIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
-  announcementTextContainer: {
+  announcementContent: {
     flex: 1,
-    marginRight: 8,
   },
-  announcementTitle: {
-    fontFamily: 'CairoMedium',
-    color: '#FFF',
-    fontSize: 20,
-    lineHeight: 22,
+  announcementTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  announcementText: {
-    fontFamily: 'Cairo',
-    color: '#FFF',
-    fontSize: 15, // Cairo Regular around 14-16
-    lineHeight: 22,
-    opacity: 0.8,
-  },
-  announcementDate: {
-    fontFamily: 'Cairo',
+  announcementTitle: {
+    fontFamily: 'CairoBold',
     color: '#FFF',
     fontSize: 14,
-    opacity: 0.6,
+    flex: 1,
+  },
+  announcementDate: {
+    fontFamily: 'CairoMedium',
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 11,
+    marginLeft: 8,
+  },
+  announcementText: {
+    fontFamily: 'CairoMedium',
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 12,
+    lineHeight: 18,
   },
 });

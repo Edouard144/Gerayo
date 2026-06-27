@@ -201,46 +201,25 @@ export default function WelcomeScreen() {
         <View style={styles.bottomSection}>
           <Animated.View style={{ opacity: btn1Opacity, transform: [{ translateY: btn1Y }] }}>
             <AnimatedButton onPress={() => router.push("/(auth)/register")}>
-              <View style={styles.glassPrimaryOuter}>
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.05)"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={styles.glassPrimary}
-                >
-                  <View style={styles.glassHighlight} />
-                  <View style={styles.glassBtnContent}>
-                    <Ionicons name="person-add" size={24} color="#FFFFFF" />
-                    <View style={styles.glassBtnTextGroup}>
-                      <Text style={styles.glassBtnTitle}>Get Started</Text>
-                      <Text style={styles.glassBtnSub}>Create a new account</Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.6)" />
-                  </View>
-                </LinearGradient>
-              </View>
+              <LinearGradient
+                colors={["#3B82F6", "#6366F1"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.primaryButton}
+              >
+                <Ionicons name="person-add" size={20} color="#FFFFFF" />
+                <Text style={styles.primaryButtonText}>Get Started</Text>
+                <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.7)" />
+              </LinearGradient>
             </AnimatedButton>
           </Animated.View>
 
           <Animated.View style={{ opacity: btn2Opacity, transform: [{ translateY: btn2Y }] }}>
             <AnimatedButton onPress={() => router.push("/(auth)/login")}>
-              <View style={styles.glassSecondaryOuter}>
-                <LinearGradient
-                  colors={["rgba(255,255,255,0.1)", "rgba(255,255,255,0.03)"]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={styles.glassSecondary}
-                >
-                  <View style={styles.glassHighlightSubtle} />
-                  <View style={styles.glassBtnContent}>
-                    <Ionicons name="log-in" size={22} color="rgba(255,255,255,0.8)" />
-                    <View style={styles.glassBtnTextGroup}>
-                      <Text style={styles.glassBtnTitleSub}>Already have an account</Text>
-                      <Text style={styles.glassBtnSubSub}>Sign in to your account</Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.35)" />
-                  </View>
-                </LinearGradient>
+              <View style={styles.secondaryButton}>
+                <Ionicons name="log-in" size={18} color="rgba(255,255,255,0.8)" />
+                <Text style={styles.secondaryButtonText}>Already have an account</Text>
+                <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.35)" />
               </View>
             </AnimatedButton>
           </Animated.View>
@@ -344,89 +323,43 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   bottomSection: {
-    gap: 16,
+    gap: 12,
   },
-  glassPrimaryOuter: {
-    borderRadius: 50,
-    overflow: "hidden",
-    shadowColor: "#818CF8",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
-  },
-  glassPrimary: {
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    borderRadius: 50,
-  },
-  glassHighlight: {
-    position: "absolute",
-    top: 0,
-    left: 20,
-    right: 20,
-    height: "50%",
-    borderRadius: 50,
-    backgroundColor: "rgba(255,255,255,0.08)",
-  },
-  glassBtnContent: {
+  primaryButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 14,
-  },
-  glassBtnTextGroup: {
-    flex: 1,
-  },
-  glassBtnTitle: {
-    fontFamily: "Cairo_700Bold",
-    fontSize: 18,
-    color: "#FFFFFF",
-    letterSpacing: 0.3,
-  },
-  glassBtnSub: {
-    fontFamily: "Cairo_500Medium",
-    fontSize: 12,
-    color: "rgba(255,255,255,0.6)",
-    marginTop: 2,
-  },
-  glassSecondaryOuter: {
-    borderRadius: 50,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.12)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  glassSecondary: {
-    paddingVertical: 20,
+    justifyContent: "center",
+    paddingVertical: 14,
     paddingHorizontal: 24,
-    borderRadius: 50,
+    borderRadius: 14,
+    gap: 10,
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  glassHighlightSubtle: {
-    position: "absolute",
-    top: 0,
-    left: 30,
-    right: 30,
-    height: "45%",
-    borderRadius: 50,
-    backgroundColor: "rgba(255,255,255,0.04)",
-  },
-  glassBtnTitleSub: {
+  primaryButtonText: {
     fontFamily: "Cairo_700Bold",
-    fontSize: 18,
+    fontSize: 16,
     color: "#FFFFFF",
-    letterSpacing: 0.3,
   },
-  glassBtnSubSub: {
-    fontFamily: "Cairo_500Medium",
-    fontSize: 12,
-    color: "rgba(255,255,255,0.4)",
-    marginTop: 2,
+  secondaryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 14,
+    gap: 10,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+  },
+  secondaryButtonText: {
+    fontFamily: "Cairo_700Bold",
+    fontSize: 16,
+    color: "#FFFFFF",
   },
   footer: {
     alignItems: "center",

@@ -205,37 +205,46 @@ export default function LandingScreen() {
         <View style={styles.bottomSection}>
           <Animated.View style={{ opacity: btn1Opacity, transform: [{ translateY: btn1Y }] }}>
             <AnimatedButton onPress={() => handleChoice()}>
-              <LinearGradient
-                colors={["#3B82F6", "#6366F1"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.primaryButton}
-              >
-                <View style={styles.btnIconSection}>
-                  <Ionicons name="car-sport" size={28} color="#FFFFFF" />
-                </View>
-                <View style={styles.btnDivider} />
-                <View style={styles.btnTextSection}>
-                  <Text style={styles.btnTitle}>Get Started</Text>
-                  <Text style={styles.btnSub}>I'm a driver</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.7)" />
-              </LinearGradient>
+              <View style={styles.glassPrimaryOuter}>
+                <LinearGradient
+                  colors={["rgba(255,255,255,0.25)", "rgba(255,255,255,0.05)"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.glassPrimary}
+                >
+                  <View style={styles.glassHighlight} />
+                  <View style={styles.glassBtnContent}>
+                    <Ionicons name="car-sport" size={24} color="#FFFFFF" />
+                    <View style={styles.glassBtnTextGroup}>
+                      <Text style={styles.glassBtnTitle}>Get Started</Text>
+                      <Text style={styles.glassBtnSub}>I'm a driver</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.6)" />
+                  </View>
+                </LinearGradient>
+              </View>
             </AnimatedButton>
           </Animated.View>
 
           <Animated.View style={{ opacity: btn2Opacity, transform: [{ translateY: btn2Y }] }}>
             <AnimatedButton onPress={() => handleChoice()}>
-              <View style={styles.secondaryButton}>
-                <View style={styles.btnIconSectionDark}>
-                  <Ionicons name="shield-checkmark" size={26} color="#818CF8" />
-                </View>
-                <View style={styles.btnDividerDark} />
-                <View style={styles.btnTextSection}>
-                  <Text style={styles.btnTitleSecondary}>Police Portal</Text>
-                  <Text style={styles.btnSubSecondary}>I'm a police worker</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.35)" />
+              <View style={styles.glassSecondaryOuter}>
+                <LinearGradient
+                  colors={["rgba(255,255,255,0.1)", "rgba(255,255,255,0.03)"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.glassSecondary}
+                >
+                  <View style={styles.glassHighlightSubtle} />
+                  <View style={styles.glassBtnContent}>
+                    <Ionicons name="shield-checkmark" size={22} color="rgba(255,255,255,0.8)" />
+                    <View style={styles.glassBtnTextGroup}>
+                      <Text style={styles.glassBtnTitleSub}>Police Portal</Text>
+                      <Text style={styles.glassBtnSubSub}>I'm a police worker</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.35)" />
+                  </View>
+                </LinearGradient>
               </View>
             </AnimatedButton>
           </Animated.View>
@@ -341,77 +350,86 @@ const styles = StyleSheet.create({
   bottomSection: {
     gap: 16,
   },
-  primaryButton: {
+  glassPrimaryOuter: {
+    borderRadius: 50,
+    overflow: "hidden",
+    shadowColor: "#818CF8",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+  },
+  glassPrimary: {
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 50,
+  },
+  glassHighlight: {
+    position: "absolute",
+    top: 0,
+    left: 20,
+    right: 20,
+    height: "50%",
+    borderRadius: 50,
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
+  glassBtnContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 0,
-    borderRadius: 18,
-    overflow: "hidden",
-    shadowColor: "#6366F1",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    gap: 14,
   },
-  btnIconSection: {
-    width: 68,
-    height: 68,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.12)",
-  },
-  btnDivider: {
-    width: 1,
-    height: "60%",
-    backgroundColor: "rgba(255,255,255,0.2)",
-  },
-  btnTextSection: {
+  glassBtnTextGroup: {
     flex: 1,
-    paddingHorizontal: 16,
   },
-  btnTitle: {
+  glassBtnTitle: {
     fontFamily: "Cairo_700Bold",
-    fontSize: 17,
+    fontSize: 18,
     color: "#FFFFFF",
     letterSpacing: 0.3,
   },
-  btnSub: {
+  glassBtnSub: {
     fontFamily: "Cairo_500Medium",
     fontSize: 12,
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(255,255,255,0.6)",
     marginTop: 2,
   },
-  secondaryButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.12)",
-    borderRadius: 18,
+  glassSecondaryOuter: {
+    borderRadius: 50,
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  btnIconSectionDark: {
-    width: 68,
-    height: 68,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(99,102,241,0.12)",
+  glassSecondary: {
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderRadius: 50,
   },
-  btnDividerDark: {
-    width: 1,
-    height: "60%",
-    backgroundColor: "rgba(255,255,255,0.1)",
+  glassHighlightSubtle: {
+    position: "absolute",
+    top: 0,
+    left: 30,
+    right: 30,
+    height: "45%",
+    borderRadius: 50,
+    backgroundColor: "rgba(255,255,255,0.04)",
   },
-  btnTitleSecondary: {
+  glassBtnTitleSub: {
     fontFamily: "Cairo_700Bold",
-    fontSize: 17,
+    fontSize: 18,
     color: "#FFFFFF",
     letterSpacing: 0.3,
   },
-  btnSubSecondary: {
+  glassBtnSubSub: {
     fontFamily: "Cairo_500Medium",
     fontSize: 12,
-    color: "rgba(255,255,255,0.45)",
+    color: "rgba(255,255,255,0.4)",
     marginTop: 2,
   },
   footer: {

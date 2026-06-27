@@ -206,7 +206,7 @@ export default function LandingScreen() {
           <Animated.View style={{ opacity: btn1Opacity, transform: [{ translateY: btn1Y }] }}>
             <AnimatedButton onPress={() => handleChoice()}>
               <LinearGradient
-                colors={["#3B82F6", "#6366F1"]}
+                colors={["#2563EB", "#7C3AED"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.primaryButton}
@@ -356,9 +356,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 14,
     gap: 10,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(255,255,255,0.15)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   secondaryButtonText: {
     fontFamily: "Cairo_700Bold",

@@ -1,417 +1,728 @@
-import { Cairo_500Medium, Cairo_700Bold, useFonts } from '@expo-google-fonts/cairo';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import React, { useRef, useState } from 'react';
 import {
-    Dimensions,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from 'react-native';
+  Cairo_500Medium,
+  Cairo_700Bold,
+  useFonts,
+} from "@expo-google-fonts/cairo";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useRef, useState } from "react";
+import {
+  Animated,
+  Easing,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import { AnimatedScreen } from "../../components/AnimatedScreen";
+import { HapticButton } from "../../components/HapticButton";
 
-import { LinearGradient } from 'expo-linear-gradient';
-import { AnimatedScreen } from '../../components/AnimatedScreen';
-import { HapticButton } from '../../components/HapticButton';
+// ── Facebook-style floating label input ──────────────────────────────────────
+interface FBFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (v: string) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+  isFocused: boolean;
+  hasError: boolean;
+  errorText?: string;
+  secureTextEntry?: boolean;
+  keyboardType?: any;
+  autoCapitalize?: any;
+  maxLength?: number;
+  returnKeyType?: "next" | "done";
+  onSubmitEditing?: () => void;
+  inputRef?: React.RefObject<TextInput>;
+  rightSlot?: React.ReactNode;
+  entranceDelay?: number;
+  h: (n: number) => number;
+  moderateScale: (n: number, f?: number) => number;
+}
 
-const { width } = Dimensions.get('window');
+function FBField({
+  label,
+  value,
+  onChangeText,
+  onFocus,
+  onBlur,
+  isFocused,
+  hasError,
+  errorText,
+  secureTextEntry,
+  keyboardType,
+  autoCapitalize,
+  maxLength,
+  returnKeyType = "next",
+  onSubmitEditing,
+  inputRef,
+  rightSlot,
+  entranceDelay = 0,
+  h,
+  moderateScale,
+}: FBFieldProps) {
+  const labelAnim = useRef(
+    new Animated.Value(value.length > 0 ? 1 : 0),
+  ).current;
+  const borderAnim = useRef(new Animated.Value(0)).current;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const entranceAnim = useRef(new Animated.Value(0)).current;
+  const prevError = useRef("");
+  const hasValue = value.length > 0;
 
-export default function LoginScreen() {
-    const router = useRouter();
-    const [fontsLoaded] = useFonts({
-        Cairo_500Medium,
-        Cairo_700Bold,
-    });
+  React.useEffect(() => {
+    Animated.timing(entranceAnim, {
+      toValue: 1,
+      duration: 340,
+      delay: entranceDelay,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
+  React.useEffect(() => {
+    Animated.timing(labelAnim, {
+      toValue: isFocused || hasValue ? 1 : 0,
+      duration: 160,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    }).start();
+  }, [isFocused, hasValue]);
 
-    // Form refs for auto-focus
-    const phoneRef = useRef<TextInput>(null);
-    const passwordRef = useRef<TextInput>(null);
+  React.useEffect(() => {
+    const to = hasError ? 2 : isFocused ? 1 : 0;
+    Animated.timing(borderAnim, {
+      toValue: to,
+      duration: 180,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    }).start();
+  }, [isFocused, hasError]);
 
-    // Validation state for success checkmarks
-    const [fullName, setFullName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMsg, setErrorMsg] = useState('');
-
-    const isFullNameValid = fullName.length > 2;
-    const isPhoneValid = phone.length >= 10;
-    const isPasswordValid = password.length >= 6;
-
-    if (!fontsLoaded) {
-        return <View style={{ flex: 1, backgroundColor: '#1a1a3a' }} />;
+  React.useEffect(() => {
+    if (hasError && errorText && errorText !== prevError.current) {
+      prevError.current = errorText;
+      Animated.sequence([
+        Animated.timing(shakeAnim, { toValue: 6, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -6, duration: 50, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 4, duration: 40, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: -4, duration: 40, useNativeDriver: true }),
+        Animated.timing(shakeAnim, { toValue: 0, duration: 30, useNativeDriver: true }),
+      ]).start();
     }
+    if (!hasError) prevError.current = "";
+  }, [hasError, errorText]);
 
-    const handleScroll = (event: any) => {
-        const y = event.nativeEvent.contentOffset.y;
-        if (y > 10 && !scrolled) {
-            setScrolled(true);
-        } else if (y <= 10 && scrolled) {
-            setScrolled(false);
-        }
-    };
+  const borderColor = borderAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: ["#CDD1D4", "#1877F2", "#FA3E3E"],
+  });
+  const labelTop = labelAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [h(15), h(5)],
+  });
+  const labelSize = labelAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [moderateScale(15), moderateScale(11)],
+  });
+  const labelColor = borderAnim.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: ["#90949C", "#1877F2", "#FA3E3E"],
+  });
+  const entranceY = entranceAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [12, 0],
+  });
 
-    const handleLogin = () => {
-        if (!isFullNameValid || !isPhoneValid || !isPasswordValid) {
-            setErrorMsg('Please ensure all fields are correctly filled.');
-            return;
-        }
-        setErrorMsg('');
-        router.push('/(auth)/verify-phone');
-    };
+  return (
+    <Animated.View
+      style={{ opacity: entranceAnim, transform: [{ translateY: entranceY }] }}
+    >
+      <Animated.View
+        style={[
+          styles.fbField,
+          {
+            borderColor,
+            height: h(52),
+            transform: [{ translateX: shakeAnim }],
+          },
+        ]}
+      >
+        <View style={styles.fbFieldInner}>
+          <Animated.Text
+            style={[
+              styles.fbLabel,
+              { top: labelTop, fontSize: labelSize, color: labelColor },
+            ]}
+            pointerEvents="none"
+          >
+            {label}
+          </Animated.Text>
+          <TextInput
+            ref={inputRef}
+            style={[
+              styles.fbInput,
+              {
+                fontSize: moderateScale(16),
+                paddingTop: h(22),
+                paddingBottom: h(6),
+              },
+            ]}
+            value={value}
+            onChangeText={onChangeText}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            placeholder=""
+            placeholderTextColor="transparent"
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            autoCapitalize={autoCapitalize}
+            maxLength={maxLength}
+            returnKeyType={returnKeyType}
+            onSubmitEditing={onSubmitEditing}
+            selectionColor="#1877F2"
+            cursorColor="#1877F2"
+          />
+        </View>
 
-    return (
-        <LinearGradient
-            colors={['#1A1458', '#054B8D']}
-            locations={[0.68, 1]}
-            style={styles.container}
+        {rightSlot && <View style={styles.fbFieldRight}>{rightSlot}</View>}
+      </Animated.View>
+
+      {hasError && errorText ? (
+        <Text style={[styles.fbErrorText, { fontSize: moderateScale(12) }]}>
+          {errorText}
+        </Text>
+      ) : null}
+    </Animated.View>
+  );
+}
+
+// ─── Main Screen ─────────────────────────────────────────────────────────────
+export default function LoginScreen() {
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
+  const router = useRouter();
+  const [fontsLoaded] = useFonts({ Cairo_500Medium, Cairo_700Bold });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  const phoneRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [touched, setTouched] = useState({
+    fullName: false,
+    phone: false,
+    password: false,
+  });
+  const [errors, setErrors] = useState({
+    fullName: "",
+    phone: "",
+    password: "",
+  });
+
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const checkboxScale = useRef(new Animated.Value(1)).current;
+
+  const validateFullName = (v: string) =>
+    v.length > 0 && v.trim().length < 3
+      ? "Enter your full name (at least 3 characters)"
+      : "";
+  const validatePhone = (v: string) =>
+    v.length > 0 && !/^07\d{8}$/.test(v)
+      ? "Enter a valid Rwanda mobile number"
+      : "";
+  const validatePassword = (v: string) =>
+    v.length > 0 && v.length < 6
+      ? "Your password must be at least 6 characters"
+      : "";
+
+  const handleBlur = (field: keyof typeof touched) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    setFocusedField(null);
+    let err = "";
+    if (field === "fullName") err = validateFullName(fullName);
+    else if (field === "phone") err = validatePhone(phone);
+    else if (field === "password") err = validatePassword(password);
+    setErrors((prev) => ({ ...prev, [field]: err }));
+  };
+
+  const isFormValid =
+    fullName.trim().length >= 3 &&
+    /^07\d{8}$/.test(phone) &&
+    password.length >= 6;
+
+  const h = (size: number) => (size / 812) * screenHeight;
+  const w = (size: number) => (size / 375) * screenWidth;
+  const moderateScale = (size: number, factor = 0.5) =>
+    size + (h(size) - size) * factor;
+
+  if (!fontsLoaded)
+    return <View style={{ flex: 1, backgroundColor: "#1a1a3a" }} />;
+
+  const handleScroll = (e: any) =>
+    setScrolled(e.nativeEvent.contentOffset.y > 10);
+
+  const handleLogin = () => {
+    setTouched({ fullName: true, phone: true, password: true });
+    setErrors({
+      fullName: validateFullName(fullName),
+      phone: validatePhone(phone),
+      password: validatePassword(password),
+    });
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.95,
+        duration: 70,
+        useNativeDriver: true,
+      }),
+      Animated.spring(buttonScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 220,
+        friction: 6,
+      }),
+    ]).start(() => {
+      if (isFormValid) router.push("/(auth)/verify-phone");
+    });
+  };
+
+  const toggleRememberMe = () => {
+    Animated.sequence([
+      Animated.timing(checkboxScale, {
+        toValue: 0.72,
+        duration: 65,
+        useNativeDriver: true,
+      }),
+      Animated.spring(checkboxScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 260,
+        friction: 6,
+      }),
+    ]).start();
+    setRememberMe(!rememberMe);
+  };
+
+  const dynamicStyles = {
+    formContainer: {
+      borderTopLeftRadius: scrolled ? 0 : h(56),
+      borderTopRightRadius: scrolled ? 0 : h(56),
+      minHeight: screenHeight - h(100),
+    },
+    headerText: {
+      fontSize: moderateScale(40),
+      height: moderateScale(30),
+      lineHeight: moderateScale(30),
+    },
+  };
+
+  const fieldHasError = (f: keyof typeof errors) => touched[f] && !!errors[f];
+
+  return (
+    <LinearGradient
+      colors={["#1A1458", "#054B8D"]}
+      locations={[0.68, 1]}
+      style={styles.container}
+    >
+      <AnimatedScreen>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
         >
-            <AnimatedScreen>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={{ flex: 1 }}
+          <StatusBar style="light" />
+
+          <View style={[styles.header, { top: h(30) }]}>
+            <Text style={[styles.headerTitle, dynamicStyles.headerText]}>
+              Gerayo
+            </Text>
+          </View>
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[styles.mainScroll, { paddingTop: h(100) }]}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+          >
+            <View style={[styles.formContainer, dynamicStyles.formContainer]}>
+              <View
+                style={[
+                  styles.scrollContent,
+                  { paddingTop: h(24), paddingBottom: h(20) },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.formTitle,
+                    { fontSize: moderateScale(24), marginBottom: h(20) },
+                  ]}
                 >
-                    <StatusBar style="light" />
+                  Welcome Back
+                </Text>
 
-                    {/* Header Section */}
-                    <View style={styles.header}>
-                        <Text style={styles.headerTitle}>Gerayo</Text>
-                    </View>
+                <View style={[styles.inputGroup, { gap: h(14) }]}>
+                  <FBField
+                    label="Full name"
+                    value={fullName}
+                    onChangeText={setFullName}
+                    onFocus={() => setFocusedField("fullName")}
+                    onBlur={() => handleBlur("fullName")}
+                    isFocused={focusedField === "fullName"}
+                    hasError={fieldHasError("fullName")}
+                    errorText={errors.fullName}
+                    returnKeyType="next"
+                    onSubmitEditing={() => phoneRef.current?.focus()}
+                    entranceDelay={60}
+                    h={h}
+                    moderateScale={moderateScale}
+                  />
 
-                    {/* Form Section */}
-                    <ScrollView
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={[styles.mainScroll, { paddingTop: 120 }]}
-                        onScroll={handleScroll}
-                        scrollEventThrottle={16}
+                  <FBField
+                    label="Phone number"
+                    value={phone}
+                    onChangeText={setPhone}
+                    onFocus={() => setFocusedField("phone")}
+                    onBlur={() => handleBlur("phone")}
+                    isFocused={focusedField === "phone"}
+                    hasError={fieldHasError("phone")}
+                    errorText={errors.phone}
+                    keyboardType="phone-pad"
+                    maxLength={10}
+                    returnKeyType="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                    inputRef={phoneRef}
+                    entranceDelay={120}
+                    h={h}
+                    moderateScale={moderateScale}
+                  />
+
+                  <FBField
+                    label="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    onFocus={() => setFocusedField("password")}
+                    onBlur={() => handleBlur("password")}
+                    isFocused={focusedField === "password"}
+                    hasError={fieldHasError("password")}
+                    errorText={errors.password}
+                    secureTextEntry={!showPassword}
+                    returnKeyType="done"
+                    inputRef={passwordRef}
+                    entranceDelay={180}
+                    h={h}
+                    moderateScale={moderateScale}
+                    rightSlot={
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                        hitSlop={{ top: 12, bottom: 12, left: 10, right: 10 }}
+                        activeOpacity={0.6}
+                      >
+                        <Text
+                          style={[
+                            styles.showHideText,
+                            { fontSize: moderateScale(14) },
+                          ]}
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </Text>
+                      </TouchableOpacity>
+                    }
+                  />
+                </View>
+
+                <View
+                  style={[
+                    styles.optionsRow,
+                    { marginTop: h(14), marginBottom: h(22) },
+                  ]}
+                >
+                  <TouchableOpacity
+                    style={styles.rememberMe}
+                    onPress={toggleRememberMe}
+                    activeOpacity={0.7}
+                  >
+                    <Animated.View
+                      style={[
+                        styles.checkbox,
+                        { width: moderateScale(18), height: moderateScale(18) },
+                        rememberMe && styles.checkboxChecked,
+                        { transform: [{ scale: checkboxScale }] },
+                      ]}
                     >
-                        <View style={[
-                            styles.formContainer,
-                            {
-                                borderTopLeftRadius: scrolled ? 0 : 56,
-                                borderTopRightRadius: scrolled ? 0 : 56,
-                            }
-                        ]}>
-                            <View style={styles.scrollContent}>
-                                <Text style={styles.formTitle}>Welcome Back</Text>
+                      {rememberMe && (
+                        <Ionicons
+                          name="checkmark"
+                          size={moderateScale(12)}
+                          color="#fff"
+                        />
+                      )}
+                    </Animated.View>
+                    <Text
+                      style={[
+                        styles.optionText,
+                        { fontSize: moderateScale(14) },
+                      ]}
+                    >
+                      Remember Me
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => router.push("/(auth)/reset-password")}
+                  >
+                    <Text
+                      style={[
+                        styles.forgotPassword,
+                        { fontSize: moderateScale(14) },
+                      ]}
+                    >
+                      Forgot Password
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
-                                <View style={styles.inputGroup}>
-                                    <View style={styles.inputWrapper}>
-                                        <TextInput
-                                            placeholder="Full names"
-                                            style={styles.input}
-                                            placeholderTextColor="#666"
-                                            value={fullName}
-                                            onChangeText={setFullName}
-                                            returnKeyType="next"
-                                            onSubmitEditing={() => phoneRef.current?.focus()}
-                                            clearButtonMode="while-editing"
-                                        />
-                                        {isFullNameValid && (
-                                            <Ionicons name="checkmark-circle" size={20} color="#4CAF50" style={styles.inputIcon} />
-                                        )}
-                                    </View>
+                <Animated.View
+                  style={{
+                    transform: [{ scale: buttonScale }],
+                    alignSelf: "center",
+                  }}
+                >
+                  <HapticButton
+                    style={[
+                      styles.primaryButton,
+                      { height: h(46), width: w(260), marginBottom: h(20) },
+                    ]}
+                    onPress={handleLogin}
+                  >
+                    <Text
+                      style={[
+                        styles.primaryButtonText,
+                        { fontSize: moderateScale(16) },
+                      ]}
+                    >
+                      Log In
+                    </Text>
+                  </HapticButton>
+                </Animated.View>
 
-                                    <View style={styles.inputWrapper}>
-                                        <TextInput
-                                            ref={phoneRef}
-                                            placeholder="Phone number"
-                                            style={styles.input}
-                                            keyboardType="phone-pad"
-                                            placeholderTextColor="#666"
-                                            value={phone}
-                                            onChangeText={setPhone}
-                                            returnKeyType="next"
-                                            onSubmitEditing={() => passwordRef.current?.focus()}
-                                            clearButtonMode="while-editing"
-                                        />
-                                        {isPhoneValid && (
-                                            <Ionicons name="checkmark-circle" size={20} color="#4CAF50" style={styles.inputIcon} />
-                                        )}
-                                    </View>
+                <View
+                  style={[styles.dividerContainer, { marginBottom: h(12) }]}
+                >
+                  <Text
+                    style={[
+                      styles.dividerText,
+                      { fontSize: moderateScale(20) },
+                    ]}
+                  >
+                    Continue with
+                  </Text>
+                </View>
 
-                                    <View style={styles.passwordContainer}>
-                                        <TextInput
-                                            ref={passwordRef}
-                                            placeholder="Password"
-                                            style={styles.passwordInput}
-                                            secureTextEntry={!showPassword}
-                                            placeholderTextColor="#666"
-                                            value={password}
-                                            onChangeText={setPassword}
-                                            returnKeyType="done"
-                                            clearButtonMode="while-editing"
-                                        />
-                                        <View style={styles.passwordActions}>
-                                            {isPasswordValid && (
-                                                <Ionicons name="checkmark-circle" size={20} color="#4CAF50" style={{ marginRight: 8 }} />
-                                            )}
-                                            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                                                <Image
-                                                    source={require('../../assets/images/Group 547.png')}
-                                                    style={{ width: 15, height: 7.53, tintColor: '#7F7F7F' }}
-                                                    resizeMode="contain"
-                                                />
-                                            </TouchableOpacity>
-                                        </View>
-                                    </View>
-                                </View>
+                <View
+                  style={[
+                    styles.socialContainer,
+                    { gap: w(20), marginBottom: h(24) },
+                  ]}
+                >
+                  <HapticButton
+                    style={[
+                      styles.socialButton,
+                      { width: h(44), height: h(44), borderRadius: h(22) },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-google"
+                      size={moderateScale(20)}
+                      color="#FFF"
+                    />
+                  </HapticButton>
+                  <HapticButton
+                    style={[
+                      styles.socialButton,
+                      { width: h(44), height: h(44), borderRadius: h(22) },
+                    ]}
+                  >
+                    <Ionicons
+                      name="logo-apple"
+                      size={moderateScale(20)}
+                      color="#FFF"
+                    />
+                  </HapticButton>
+                </View>
 
-                                <View style={styles.optionsRow}>
-                                    <TouchableOpacity
-                                        style={styles.rememberMe}
-                                        onPress={() => setRememberMe(!rememberMe)}
-                                    >
-                                        <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-                                            {rememberMe && <Ionicons name="checkmark" size={12} color="#fff" />}
-                                        </View>
-                                        <Text style={styles.optionText}>Remember Me</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity onPress={() => router.push('/(auth)/reset-password')}>
-                                        <Text style={styles.forgotPassword}>Forgot Password</Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                {errorMsg ? (
-                                    <Text style={[styles.optionText, { color: '#FA3E3E', textAlign: 'center', marginBottom: 16 }]}>
-                                        {errorMsg}
-                                    </Text>
-                                ) : null}
-
-                                <HapticButton
-                                    style={styles.primaryButton}
-                                    onPress={handleLogin}
-                                >
-                                    <Text style={styles.primaryButtonText}>Log In</Text>
-                                </HapticButton>
-
-                                <View style={styles.dividerContainer}>
-                                    <Text style={styles.dividerText}>Continue with</Text>
-                                </View>
-
-                                <View style={styles.socialContainer}>
-                                    <HapticButton style={styles.socialButton}>
-                                        <Ionicons name="logo-google" size={24} color="#FFF" />
-                                    </HapticButton>
-                                    <HapticButton style={styles.socialButton}>
-                                        <Ionicons name="logo-apple" size={24} color="#FFF" />
-                                    </HapticButton>
-                                </View>
-
-                                <View style={styles.loginContainer}>
-                                    <Text style={styles.loginText}>Don't have an account? </Text>
-                                    <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-                                        <Text style={styles.loginLink}>Sign Up.</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </View>
-                    </ScrollView>
-                </KeyboardAvoidingView>
-            </AnimatedScreen>
-        </LinearGradient>
-    );
+                <View style={styles.loginContainer}>
+                  <Text
+                    style={[styles.loginText, { fontSize: moderateScale(14) }]}
+                  >
+                    Don't have an account?{" "}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => router.push("/(auth)/register")}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[
+                        styles.loginLink,
+                        { fontSize: moderateScale(14) },
+                      ]}
+                    >
+                      Sign Up.
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </AnimatedScreen>
+    </LinearGradient>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // backgroundColor: '#1a1a3a', // Handled by LinearGradient
-    },
-    header: {
-        position: 'absolute',
-        top: 30,
-        left: 0,
-        right: 0,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 20,
-    },
-    headerTitle: {
-        fontFamily: 'Cairo_500Medium',
-        fontSize: 40,
-        fontWeight: '500',
-        color: '#FFFFFF',
-        textAlign: 'center',
-        width: 119,
-        height: 22,
-        lineHeight: 22,
-    },
-    mainScroll: {
-        flexGrow: 1,
-    },
-    formContainer: {
-        marginTop: 72,
-        backgroundColor: '#D9D9D9',
-        borderTopLeftRadius: 56,
-        borderTopRightRadius: 56,
-        minHeight: Dimensions.get('window').height - 120 - 72,
-        // Card Shadow
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 5,
-    },
-    scrollContent: {
-        paddingHorizontal: 32, // Match register.tsx padding
-        paddingVertical: 24,
-    },
-    formTitle: {
-        fontFamily: 'Cairo_500Medium',
-        fontSize: 24,
-        color: '#333',
-        textAlign: 'center',
-        marginBottom: 24,
-    },
-    inputGroup: {
-        gap: 16,
-    },
-    input: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        height: 44,
-        fontSize: 16,
-        fontFamily: 'Cairo_500Medium',
-        color: '#333',
-        outlineStyle: 'none',
-    } as any,
-    passwordContainer: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        paddingHorizontal: 16,
-        height: 44,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        outlineStyle: 'none',
-    } as any,
-    passwordInput: {
-        flex: 1,
-        fontSize: 16,
-        fontFamily: 'Cairo_500Medium',
-        color: '#333',
-        marginRight: 10,
-        outlineStyle: 'none',
-    } as any,
-    inputWrapper: {
-        position: 'relative',
-        justifyContent: 'center',
-    },
-    inputIcon: {
-        position: 'absolute',
-        right: 12,
-    },
-    passwordActions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    optionsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 16,
-        marginBottom: 24,
-    },
-    rememberMe: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    checkbox: {
-        width: 20,
-        height: 20,
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: '#0056b3',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    checkboxChecked: {
-        backgroundColor: '#0056b3',
-    },
-    optionText: {
-        color: '#666',
-        fontSize: 14,
-        fontFamily: 'Cairo_500Medium',
-    },
-    forgotPassword: {
-        color: '#0056b3',
-        fontSize: 14,
-        fontFamily: 'Cairo_500Medium',
-    },
-    primaryButton: {
-        backgroundColor: '#004080',
-        borderRadius: 25,
-        width: 138, // Match visual of smaller button (Create Account size)
-        height: 46,
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'center',
-        marginBottom: 24,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    primaryButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'Cairo_500Medium',
-    },
-    dividerContainer: {
-        alignItems: 'center',
-        marginBottom: 16,
-    },
-    dividerText: {
-        color: '#666',
-        fontSize: 20, // Match user preference
-        fontFamily: 'Cairo_500Medium',
-    },
-    socialContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: 20,
-        marginBottom: 30,
-    },
-    socialButton: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#004080', // Match new color
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loginContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loginText: {
-        color: '#999',
-        fontSize: 14,
-        fontFamily: 'Cairo_500Medium',
-    },
-    loginLink: {
-        color: '#004080',
-        fontSize: 14,
-        fontFamily: 'Cairo_700Bold',
-    },
+  container: { flex: 1 },
+  header: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 20,
+  },
+  headerTitle: {
+    fontFamily: "Cairo_500Medium",
+    fontWeight: "500",
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  mainScroll: { flexGrow: 1 },
+  formContainer: {
+    backgroundColor: "#FFFFFF",
+    flex: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  scrollContent: { paddingHorizontal: 32 },
+  formTitle: {
+    fontFamily: "Cairo_700Bold",
+    color: "#1A1A2E",
+    textAlign: "center",
+  },
+  inputGroup: {},
+
+  fbField: {
+    width: "100%",
+    maxWidth: 296,
+    alignSelf: "center",
+    backgroundColor: "#F5F6F7",
+    borderRadius: 6,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  fbFieldInner: { flex: 1, position: "relative", justifyContent: "center" },
+  fbLabel: {
+    position: "absolute",
+    left: 14,
+    fontFamily: "Cairo_500Medium",
+    zIndex: 1,
+  },
+  fbInput: {
+    fontFamily: "Cairo_500Medium",
+    color: "#1C1E21",
+    paddingHorizontal: 14,
+    width: "100%",
+  } as any,
+  fbFieldRight: {
+    paddingRight: 14,
+    paddingLeft: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  showHideText: { color: "#1877F2", fontFamily: "Cairo_700Bold" },
+  fbErrorText: {
+    color: "#FA3E3E",
+    fontFamily: "Cairo_500Medium",
+    marginTop: 5,
+    paddingHorizontal: 2,
+    alignSelf: "center",
+    width: "100%",
+    maxWidth: 296,
+  },
+
+  optionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    maxWidth: 296,
+    alignSelf: "center",
+  },
+  rememberMe: { flexDirection: "row", alignItems: "center", gap: 8 },
+  checkbox: {
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: "#0056b3",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  checkboxChecked: { backgroundColor: "#0056b3" },
+  optionText: { color: "#888", fontFamily: "Cairo_500Medium" },
+  forgotPassword: { color: "#0056b3", fontFamily: "Cairo_700Bold" },
+
+  primaryButton: {
+    backgroundColor: "#1877F2",
+    borderRadius: 6,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#1877F2",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.28,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  primaryButtonText: { color: "#fff", fontFamily: "Cairo_700Bold" },
+
+  dividerContainer: { alignItems: "center" },
+  dividerText: { color: "#ADADAD", fontFamily: "Cairo_500Medium" },
+  socialContainer: { flexDirection: "row", justifyContent: "center" },
+  socialButton: {
+    backgroundColor: "#0056b3",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#0056b3",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+
+  loginContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loginText: { color: "#ADADAD", fontFamily: "Cairo_500Medium" },
+  loginLink: { color: "#0056b3", fontFamily: "Cairo_700Bold" },
 });
